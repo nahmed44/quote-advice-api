@@ -1,7 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const Advice = require('../models/Advice');
-const Quote = require('../models/Quote');
 
 // @desc    Get a random advice
 // @route   GET /api/advice
