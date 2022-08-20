@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const passport = require('passport');
 const router = require('express').Router();
 const prisma   = require('../prisma/prisma');
+const { validateEmail } = require('../helpers/validators');
 
 // @desc    Login user
 // @route   POST /api/auth/login
@@ -36,10 +37,8 @@ router.post('/register', async (req, res) => {
             }
         }
 
-        const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        
         // Checking if user email is valid
-        if (!emailRegex.test(email)) {
+        if (!validateEmail(email)) {
             return res.status(400).json({ message: 'Please provide a valid email' });
         }
 
@@ -90,9 +89,13 @@ router.post('/register', async (req, res) => {
 
 // @desc    Logout user
 // @route   POST /api/auth/logout
-router.post('/logout', (req, res) => {
-    req.logout();
-    res.status(200).json({ message: 'You have been successfully logged out!' });
+router.post('/logout', (req, res, next) => {
+    req.logout({ keepSessionInfo: false }, 
+        (err) => {
+            if (err) { return next(err); }
+            res.status(200).json({ message: 'You have been successfully logged out!' });
+        }
+    );
 });
 
 
