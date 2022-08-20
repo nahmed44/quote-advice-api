@@ -2,8 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 model User {
-  id        String   @unique @default(uuid())
-  name      String
+  id        String   @unique @default(uuid()) 
+  name      String  
   email     String
   salt      String
   password  String

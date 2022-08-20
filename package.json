@@ -2,9 +2,9 @@
   "name": "quote_advice_api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "cross-env NODE_ENV=development nodemon app.js"
   },
   "keywords": [],
   "author": "Noman Ahmed",
@@ -17,9 +17,13 @@
   },
   "dependencies": {
     "@prisma/client": "^4.2.1",
+    "connect-sqlite3": "^0.9.13",
     "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "express-session": "^1.17.3",
     "moment": "^2.29.4",
     "morgan": "^1.10.0",
-    "passport": "^0.6.0"
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0"
   }
 }
