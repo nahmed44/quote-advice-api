@@ -60,7 +60,8 @@ app.use(function(err, req, res, next) {
     // }
 
 
-    formatErrorResponse(err, res);
+    const errorResponse = formatErrorResponse(err);
+    res.status(errorResponse.statusCode).json(errorResponse);
 
 });
 
