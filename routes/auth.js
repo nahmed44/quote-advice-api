@@ -3,6 +3,7 @@ const passport = require('passport');
 const router = require('express').Router();
 const prisma   = require('../prisma/prisma');
 const { validateEmail } = require('../helpers/validators');
+const { formatErrorResponse, formatDataResponse } = require('../helpers/formatResponse');
 
 // @desc    Login user
 // @route   POST /api/auth/login
@@ -27,30 +28,66 @@ router.post('/register', async (req, res) => {
         // Checking if user has provided all the required fields
         if (!name || !email || !password) {
             if(!name) {
-                return res.status(400).json({ message: 'Please provide a name' });
+                const jsonErrorResponse = formatErrorResponse({
+                    errName : 'NameRequiredError',
+                    errMessage: 'Name is required',
+                    statusCode: 400,
+                    message: 'Name is required'
+                });
+                return res.status(jsonErrorResponse.statusCode).json(jsonErrorResponse);
             }
             if(!email) {
-                return res.status(400).json({ message: 'Please provide an email' });
+                const jsonErrorResponse = formatErrorResponse({
+                    errName : 'EmailRequiredError',
+                    errMessage: 'Email is required',
+                    statusCode: 400,
+                    message: 'Email is required'
+                });
+                return res.status(jsonErrorResponse.statusCode).json(jsonErrorResponse);
             }
             if(!password) {
-                return res.status(400).json({ message: 'Please provide a password' });
+                const jsonErrorResponse = formatErrorResponse({
+                    errName : 'PasswordRequiredError',
+                    errMessage: 'Password is required',
+                    statusCode: 400,
+                    message: 'Password is required'
+                });
+                return res.status(jsonErrorResponse.statusCode).json(jsonErrorResponse);
             }
         }
 
         // Checking if user email is valid
         if (!validateEmail(email)) {
-            return res.status(400).json({ message: 'Please provide a valid email' });
+            const jsonErrorResponse = formatErrorResponse({
+                errName : 'EmailInvalidError',
+                errMessage: 'Email is invalid',
+                statusCode: 400,
+                message: 'Please provide a valid email'
+            });
+            return res.status(jsonErrorResponse.statusCode).json(jsonErrorResponse);
         }
 
         // Checking if user password is valid
         if (password.toString().length < 10) {
-            return res.status(400).json({ message: 'Please provide a password with at least 10 characters' });
+            const jsonErrorResponse = formatErrorResponse({
+                errName : 'PasswordLengthError',
+                errMessage: 'Password does not meet the minimum length requirement',
+                statusCode: 400,
+                message: 'Password must be at least 10 characters long'
+            });
+            return res.status(jsonErrorResponse.statusCode).json(jsonErrorResponse);
         }
 
         // Checking if user already exists in the database (email)
         const existingUser = await prisma.user.findFirst({ where: { email } });
         if (existingUser) {
-            return res.status(400).json({ message: 'User already exists' });
+            const jsonErrorResponse = formatErrorResponse({
+                errName : 'UserAlreadyExistsError',
+                errMessage: 'User already exists',
+                statusCode: 400,
+                message: 'User already exists'
+            });
+            return res.status(jsonErrorResponse.statusCode).json(jsonErrorResponse);
         }
 
 
@@ -66,23 +103,37 @@ router.post('/register', async (req, res) => {
             }
         })
         .then(user => {
-            res.status(201).json({
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                message: 'You have been successfully registered!'
+            const jsonSuccessResponse = formatDataResponse({
+                count: 1,
+                statusCode: 201,
+                message: 'User successfully registered',
+                data: [{
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                }]
             });
+
+            res.status(jsonSuccessResponse.statusCode).json(jsonSuccessResponse);
         }).catch(error => {
             console.log(error);
-            res.status(500).json({
+            const jsonErrorResponse = formatErrorResponse({
+                errName : 'UserRegistrationError',
+                errMessage: 'Server ran into an error while registering the user',
+                statusCode: 500,
                 message: 'Encountered an error while registering user. Please try again later.'
             });
+            res.status(jsonErrorResponse.statusCode).json(jsonErrorResponse);
         });
     } catch (error) {
         console.log(error);
-        res.status(500).json({
-            message: 'Server ran into an error! Please try again later.'
+        const jsonErrorResponse = formatErrorResponse({
+            errName : 'UserRegistrationError',
+            errMessage: 'Server ran into an error while registering the user',
+            statusCode: 500,
+            message: 'Encountered an error while registering user. Please try again later.'
         });
+        res.status(jsonErrorResponse.statusCode).json(jsonErrorResponse);
     }
     
 });
