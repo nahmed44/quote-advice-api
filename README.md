@@ -32,6 +32,7 @@ API written in Node using Express.js to retrive random Quote or Advice.
 # Roadmap
 - :white_check_mark: Register user
 - :white_check_mark: Authentication
+- :white_check_mark: Generate unique API key
 - :white_check_mark: Get/Add Advice
 - :dart: Get/Add Quote
 - :dart: Rate limiter
